@@ -5,17 +5,18 @@ function createWindow(){
 	div.dataset.y = 0;
 	div.dataset.xoff = 0;
 	div.dataset.yoff = 0;
+	div.dataset.width = 250;
+	div.dataset.height = 250;
+	div.style.width = div.dataset.width+"px"
+	div.style.height = div.dataset.height+"px"
 	div.addEventListener("mousedown",function(event){pick(event,this)});
 	window.addEventListener("mouseup",function(event){release(event)});
 
 		var windowDiv = document.createElement("div");
-		windowDiv.style = 'display: grid; grid-template-columns: 1fr auto auto auto; grid-template-rows: auto auto; grid-template-areas: "linkInput watchButton embedButton closeButton";';
-		windowDiv.innerHTML = createIframe("https://www.youtube.com/embed/8_qL0Cjmvmk?modestbranding=1");
-
-		var toolBar = document.createElement("div");
-		toolBar.style = 'display: grid; grid-template-columns: 1fr auto auto auto; grid-template-rows: auto auto; grid-template-areas: "linkInput watchButton embedButton closeButton";';
+		windowDiv.style = 'display: grid; grid-template-columns: 1fr auto auto auto; grid-template-rows: auto auto; grid-template-areas: "linkInput watchButton embedButton closeButton" "iframe iframe iframe iframe";';
 
 			var linkInput = document.createElement("input");
+			linkInput.id = "linkInput";
 			linkInput.type = "text";
 			linkInput.width = "100%";
 			linkInput.style = "grid-area: linkInput; border: 1px solid #eeeeee; border-radius: 2px;";
@@ -23,26 +24,33 @@ function createWindow(){
 			var watchButton = document.createElement("button");
 			watchButton.style = "grid-area: watchButton; border: 1px solid #aaaaaa; border-radius: 2px; background-color: #333333; color: #aaaaaa;";
 			watchButton.innerHTML = "▶";
-			watchButton.onclick = function(){openlink(this.parentElement.parentElement)};
+			watchButton.onclick = function(){openlink(document.getElementById("linkInput").value)};
 
 			var embedButton = document.createElement("button");
 			embedButton.style = "grid-area: embedButton; border: 1px solid #aaaaaa; border-radius: 2px; background-color: #333333; color: #aaaaaa;";
 			embedButton.innerHTML = "☐";
-			embedButton.onclick = function(){embed(this.parentElement.parentElement)};
+			embedButton.onclick = function(){openlink(embed(document.getElementById("linkInput").value))};
 
 			var closeButton = document.createElement("button");
 			closeButton.style = "grid-area: closeButton; border: 1px solid #aaaaaa; border-radius: 2px; background-color: #333333; color: #aaaaaa;";
 			closeButton.innerHTML = "X";
 			closeButton.onclick = function(){this.parentElement.parentElement.parentElement.removeChild(this.parentElement.parentElement);};
 
-		toolBar.appendChild(linkInput);
-		toolBar.appendChild(watchButton);
-		toolBar.appendChild(embedButton);
-		toolBar.appendChild(closeButton);
+			var iframeDiv = document.createElement("div");
+			iframeDiv.id = "iframeDiv";
+			iframeDiv.style = "grid-area: iframe;";
+
+		windowDiv.appendChild(linkInput);
+		windowDiv.appendChild(watchButton);
+		windowDiv.appendChild(embedButton);
+		windowDiv.appendChild(closeButton);
+		windowDiv.appendChild(iframeDiv);
 		
-	div.appendChild(toolBar);
 	div.appendChild(windowDiv);
 	document.body.appendChild(div);
+
+	selected = div;
+	openlink("https://www.youtube.com/embed/8_qL0Cjmvmk?modestbranding=1");
 }
 
 var selected;
@@ -50,7 +58,9 @@ function pick(event,div) {
 	selected = div;
 	div.dataset.xoff = event.x-parseInt(div.dataset.x);
 	div.dataset.yoff = event.y-parseInt(div.dataset.y);
-	window.addEventListener("mousemove",drag);
+	if(true) {
+		window.addEventListener("mousemove",drag);
+	}
 }
 function drag(event) {
 	selected.dataset.x = event.x-parseInt(selected.dataset.xoff);
@@ -58,20 +68,26 @@ function drag(event) {
 	selected.style.left = selected.dataset.x+"px";
 	selected.style.top = selected.dataset.y+"px";
 }
+function resize(event) {
+	selected.dataset.width = event.x-selected.dataset.x;
+	selected.dataset.height = event.y-selected.dataset.y;
+	selected.style.width = selected.dataset.width+"px"
+	selected.style.height = selected.dataset.height+"px"
+}
 function release() {
 	window.removeEventListener("mousemove",drag);
 }
 
-function openlink(div) {
-	var link = div.childNodes[0].childNodes[0].value;
-	div.childNodes[1].innerHTML = createIframe(link);
+function openlink(link) {
+	document.getElementById("iframeDiv").innerHTML = createIframe(link);
 }
-function embed(div,width,height) {
-	var link = div.childNodes[0].childNodes[0].value;
+function embed(link) {
 	var code = link.slice(32,link.length);
-	div.childNodes[1].innerHTML = createIframe("https://www.youtube.com/embed/"+code+"?modestbranding=1",width,height);
+	return "https://www.youtube.com/embed/"+code+"?modestbranding=1";
 }
-function createIframe(link,width,height) {
+function createIframe(link) {
+	width = parseInt(selected.dataset.width);
+	height = parseInt(selected.dataset.height)-20;
 	if(link.slice(0,8)=="https://"||link.slice(0,7)=="http://") {}	else	{
 		link = "https://"+link;
 	}
