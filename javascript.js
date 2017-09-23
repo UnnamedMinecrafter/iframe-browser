@@ -9,10 +9,11 @@ function createWindow(){
 	window.addEventListener("mouseup",function(event){release(event)});
 
 		var windowDiv = document.createElement("div");
+		windowDiv.style = 'display: grid; grid-template-columns: 1fr auto auto auto; grid-template-rows: auto auto; grid-template-areas: "linkInput watchButton embedButton closeButton";';
 		windowDiv.innerHTML = createIframe("https://www.youtube.com/embed/8_qL0Cjmvmk?modestbranding=1");
 
 		var toolBar = document.createElement("div");
-		toolBar.style = 'display: grid; grid-template-columns: 1fr auto auto auto; grid-template-rows: auto auto; grid-template-areas: "linkInput watchButton embedButton close";';
+		toolBar.style = 'display: grid; grid-template-columns: 1fr auto auto auto; grid-template-rows: auto auto; grid-template-areas: "linkInput watchButton embedButton closeButton";';
 
 			var linkInput = document.createElement("input");
 			linkInput.type = "text";
@@ -29,9 +30,15 @@ function createWindow(){
 			embedButton.innerHTML = "☐";
 			embedButton.onclick = function(){embed(this.parentElement.parentElement)};
 
+			var closeButton = document.createElement("button");
+			closeButton.style = "grid-area: closeButton; border: 1px solid #aaaaaa; border-radius: 2px; background-color: #333333; color: #aaaaaa;";
+			closeButton.innerHTML = "X";
+			closeButton.onclick = function(){this.parentElement.parentElement.parentElement.removeChild(this.parentElement.parentElement);};
+
 		toolBar.appendChild(linkInput);
 		toolBar.appendChild(watchButton);
 		toolBar.appendChild(embedButton);
+		toolBar.appendChild(closeButton);
 		
 	div.appendChild(toolBar);
 	div.appendChild(windowDiv);
