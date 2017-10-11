@@ -1,6 +1,6 @@
 function createWindow(){
 	var div = document.createElement("div");
-	div.style = "position: fixed; top: 0; left: 0; z-index: 100; padding: 5px; background-color: #333333; border-radius: 5px;";
+	div.style = "position: fixed; top: 0; left: 0; z-index: 10000000; padding: 5px; background-color: #333333; border-radius: 5px;";
 	div.dataset.x = 0;
 	div.dataset.y = 0;
 	div.dataset.xoff = 0;
